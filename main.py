@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-import os
 import datetime
+import os
 import tomllib
-from pathlib import Path
-
-
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 from uuid import UUID
 
 import asyncpg
-from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from mcp.server.fastmcp import FastMCP
 from starlette.routing import Route
 
 load_dotenv()
@@ -50,7 +48,7 @@ def get_version() -> str:
         pyproject_path = Path(__file__).parent / "pyproject.toml"
         with open(pyproject_path, "rb") as f:
             return tomllib.load(f)["project"]["version"]
-    except Exception:
+    except Exception:  # noqa: BLE001
         return "unknown"
 
 
@@ -105,7 +103,7 @@ async def app_lifespan(app):
         )
         print("✅ Database connection pool berhasil dibuat saat startup.")
     except Exception as e:
-        raise RuntimeError(f"Gagal membuat database pool: {e}")
+        raise RuntimeError(f"Gagal membuat database pool: {e}") from e
 
     async with original_lifespan(app) as state:
         yield state
@@ -121,7 +119,6 @@ app.router.lifespan_context = app_lifespan
 @asynccontextmanager
 async def get_db_connection():
     """Context manager untuk mendapatkan koneksi secara efisien dari pool."""
-    global db_pool
     if not db_pool:
         raise RuntimeError(
             "Database pool belum diinisialisasi. Pastikan server dijalankan dengan benar."
@@ -158,11 +155,11 @@ def extract_timestamp_from_uuid(dataid: str) -> str:
         timestamp_int = UUID(str(dataid)).time
         date = datetime.datetime.fromtimestamp(
             timestamp_int / 1_000,
-            tz=datetime.datetime.now(datetime.timezone.utc).tzinfo,
+            tz=datetime.datetime.now(datetime.UTC).tzinfo,
         )
         # Hapus milidetik agar lebih bersih untuk LLM
         return date.strftime("%Y-%m-%d %H:%M:%S")
-    except Exception:
+    except Exception:  # noqa: BLE001
         return ""
 
 
@@ -245,7 +242,7 @@ async def read_hydroponic_table(limit: int = 5) -> list[dict[str, Any]]:
         result = []
         for row in rows:
             row_dict = dict(row)
-            if "dataid" in row_dict and row_dict["dataid"]:
+            if row_dict.get("dataid"):
                 row_dict["timestamp"] = extract_timestamp_from_uuid(row_dict["dataid"])
                 row_dict["dataid"] = str(row_dict["dataid"])
             result.append(row_dict)
@@ -285,7 +282,7 @@ async def get_latest_sensor_data() -> dict[str, Any]:
             return {"message": "Data kosong"}
 
         row_dict = dict(row)
-        if "dataid" in row_dict and row_dict["dataid"]:
+        if row_dict.get("dataid"):
             row_dict["timestamp"] = extract_timestamp_from_uuid(row_dict["dataid"])
             row_dict["dataid"] = str(row_dict["dataid"])
 
@@ -330,7 +327,7 @@ async def get_sensor_data_summary(
         for row in rows:
             row_dict = dict(row)
             # Konversi kolom timestamp TimescaleDB menjadi string
-            if "bucket_time" in row_dict and row_dict["bucket_time"]:
+            if row_dict.get("bucket_time"):
                 row_dict["timestamp"] = row_dict["bucket_time"].strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
