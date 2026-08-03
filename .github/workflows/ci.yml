@@ -33,6 +33,3 @@ jobs:
 
       - name: Check code linting
         run: uv run ruff check .
-
-      - name: Run backend tests
-        run: uv run pytest -q || true

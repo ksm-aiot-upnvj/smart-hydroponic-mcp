@@ -19,6 +19,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "python-semantic-release>=10.6.1",
+    "ruff>=0.16.0",
 ]
 
 [tool.semantic_release]
