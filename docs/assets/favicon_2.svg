@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="leafGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2E7D32" />
+      <stop offset="100%" stop-color="#81C784" />
+    </linearGradient>
+    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4FC3F7" />
+      <stop offset="100%" stop-color="#0277BD" />
+    </linearGradient>
+  </defs>
+  <!-- Minimalist Water Drop and Leaf for favicon -->
+  <path d="M50 90 C25 90, 15 65, 50 20 C85 65, 75 90, 50 90 Z" fill="url(#waterGrad)" />
+  <path d="M25 65 C5 40, 5 5, 25 5 C45 5, 65 30, 25 65 Z" fill="url(#leafGrad)" />
+</svg>
