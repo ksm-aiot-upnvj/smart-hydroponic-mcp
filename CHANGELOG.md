@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.2 (2026-08-04)
+
+### Bug Fixes
+
+- Add .dockerignore to prevent host .venv copying into container
+  ([`054871e`](https://github.com/ksm-aiot-upnvj/smart-hydroponic-mcp/commit/054871ef958e3c9f4bd76ead9a47c4fbdc2a456b))
+
+
 ## v1.1.1 (2026-08-04)
 
 ### Bug Fixes
