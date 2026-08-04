@@ -32,7 +32,7 @@ mcp = FastMCP(
     json_response=True,
 )
 
-app = mcp.streamable_http_app()
+app = mcp.sse_app()
 
 app.add_middleware(
     CORSMiddleware,
