@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.0 (2026-08-04)
+
+### Features
+
+- Migrate mcp server transport to SSE
+  ([`88a0ad3`](https://github.com/ksm-aiot-upnvj/smart-hydroponic-mcp/commit/88a0ad3c28dc651bd92958f57dd785ff46946fff))
+
+
 ## v1.1.2 (2026-08-04)
 
 ### Bug Fixes
