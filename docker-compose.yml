@@ -1,0 +1,17 @@
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart_hydroponic_mcp
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - hydroponic_network
+
+networks:
+  hydroponic_network:
+    external: true
