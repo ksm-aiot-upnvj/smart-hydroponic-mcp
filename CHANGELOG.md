@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.1.1 (2026-08-04)
+
+### Bug Fixes
+
+- Use absolute path for python executable in Dockerfile
+  ([`3ad64e9`](https://github.com/ksm-aiot-upnvj/smart-hydroponic-mcp/commit/3ad64e9a07f9335f08eb9b6dc8c8919cb854a94b))
+
+
 ## v1.1.0 (2026-08-04)
 
 ### Features
