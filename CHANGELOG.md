@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.1 (2026-08-04)
+
+### Bug Fixes
+
+- Disable strict host header validation for FastMCP
+  ([`953b03a`](https://github.com/ksm-aiot-upnvj/smart-hydroponic-mcp/commit/953b03a53e9b3d06647f619451a01e29e43a52cc))
+
+
 ## v1.2.0 (2026-08-04)
 
 ### Features
