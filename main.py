@@ -30,7 +30,7 @@ mcp = FastMCP(
     name="Hydroponic MCP",
     stateless_http=True,
     json_response=True,
-    transport_security={'allowed_hosts': ['*']}
+    transport_security={"allowed_hosts": ["*"]},
 )
 
 app = mcp.sse_app()
