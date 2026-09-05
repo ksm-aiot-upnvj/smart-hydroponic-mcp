@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.3.0 (2026-09-05)
+
+### Documentation
+
+- Update roadmap, api docs, and system architecture diagrams
+  ([`0dc9c23`](https://github.com/ksm-aiot-upnvj/smart-hydroponic-mcp/commit/0dc9c23f59ff462342f0817aa46e1bca14340143))
+
+### Features
+
+- **mcp**: Modernize server with sqlalchemy async core and token-optimized tools
+  ([`58b352b`](https://github.com/ksm-aiot-upnvj/smart-hydroponic-mcp/commit/58b352bcdde245e6c89d21443872211ba76d928e))
+
+
 ## v1.2.1 (2026-08-04)
 
 ### Bug Fixes
