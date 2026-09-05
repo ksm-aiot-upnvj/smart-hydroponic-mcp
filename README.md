@@ -1,49 +1,79 @@
-# Smart Hydroponic MCP Server
+# 🌱 Smart Hydroponic MCP Server
 
-Proyek ini adalah sebuah **Model Context Protocol (MCP) Server** yang dikhususkan untuk berinteraksi dengan database sensor hidroponik (menggunakan PostgreSQL + TimescaleDB). 
+Server **Model Context Protocol (MCP)** berbasis semantic context untuk sistem IoT Smart Hydroponic. Menghubungkan Large Language Models (LLM) dengan database time-series **PostgreSQL + TimescaleDB** secara aman, efisien, dan terstandardisasi.
 
-> **Apa itu MCP?**  
-> **Model Context Protocol (MCP)** adalah standar terbuka (*open standard*) yang memungkinkan asisten AI (seperti Claude) untuk terhubung secara aman dengan sumber data, *tools*, dan *prompt* eksternal. Melalui MCP, LLM dapat berinteraksi dengan sistem dan data lokal Anda menggunakan arsitektur client-server yang seragam.
+> **Apa itu Model Context Protocol (MCP)?**  
+> MCP adalah standar terbuka (*open standard*) yang memungkinkan agen kecerdasan buatan (seperti Claude Desktop, Cursor, atau custom LLM agent) mengakses data real-time, context feeds, tools terparameterisasi, dan prompt workflow secara seragam tanpa membebani LLM dengan kueri SQL mentah.
 
-Server ini mengekspos tools yang bisa digunakan oleh LLM (seperti Claude Desktop) untuk membaca data sensor terbaru dan melakukan agregasi secara dinamis.
+---
 
-## Prasyarat
+## ✨ Fitur Utama
+
+- **📦 MCP Resource (`hydroponic://state/latest`):** Menyajikan snapshot telemetri kondisi kebun terkini (pH, TDS, suhu rata-rata, kelembapan, flowrate, volume tandon, dan status aktuator) dalam format teks bersih untuk LLM.
+- **📈 Downsampled Historical Trend (`get_historical_trend`):** Menggunakan fungsi TimescaleDB `time_bucket('1 hour', dataid)` untuk menyajikan tren historis teragregasi (rata-rata, minimum, maksimum, sampel) tanpa menghabiskan context window LLM.
+- **⚡ Actuator Uptime Summary (`get_actuator_summary`):** Menghitung keandalan sistem dan persentase aktif aktuator (`pump_status`, `light_status`, `automation_status`) selama rentang waktu evaluasi.
+- **🩺 Standardized Diagnostic Prompt (`diagnose_environment`):** Workflow prompt cerdas yang memandu AI membandingkan kondisi riil terhadap standar agronomi hidroponik dan menyusun diagnosis komprehensif.
+- **🛡️ SQLAlchemy 2.0 Async Core & Safe Raw SQL:** Koneksi dikelola dengan `create_async_engine` dan `async_sessionmaker`, sementara query dieksekusi dengan parameterized binding `:param` yang kebal terhadap SQL Injection.
+- **🧪 Automated Testing & CI/CD:** Dilengkapi test suite `pytest` dan pipeline GitHub Actions otomatis untuk linting, testing, dan Docker build/push.
+
+---
+
+## 📋 Prasyarat
 
 - Python >= 3.14
-- `uv` Package Manager
-- PostgreSQL dengan ekstensi **TimescaleDB** (termasuk dukungan untuk fitur native `UUIDv7` pada fungsi `time_bucket`).
+- Package Manager: [`uv`](https://docs.astral.sh/uv/)
+- PostgreSQL dengan ekstensi **TimescaleDB** (mendukung partisi hypertable berbasis `UUIDv7` / `timestamp`).
 
-## Environment Variables
+---
 
-Salin file (atau buat) `.env` di *root directory* dan pastikan variabel-variabel berikut telah disetel:
+## ⚙️ Konfigurasi Environment
+
+Salin atau buat file `.env` di direktori utama:
 
 ```ini
 HYDROPONIC_DB_HOST=127.0.0.1
 HYDROPONIC_DB_PORT=5432
-HYDROPONIC_DB_USER=your_db_user
-HYDROPONIC_DB_PASSWORD=your_db_password
-HYDROPONIC_DB_NAME=your_db_name
+HYDROPONIC_DB_USER=admin_iot_db
+HYDROPONIC_DB_PASSWORD=your_password
+HYDROPONIC_DB_NAME=iot_hydroponik
 HYDROPONIC_DB_SCHEMA=public
 HYDROPONIC_TABLE_NAME=hydroponic_data
 ```
 
-## Instalasi & Menjalankan Server
+Atau menggunakan connection string tunggal:
+```ini
+DATABASE_URL=postgresql+asyncpg://admin_iot_db:your_password@127.0.0.1:5432/iot_hydroponik
+```
 
-Proyek ini sepenuhnya mengelola dependencies melalui `uv`. Anda tidak perlu menggunakan `pip install` secara manual.
+---
 
-Untuk menjalankan server HTTP / FastMCP secara lokal, cukup gunakan:
+## 🚀 Menjalankan Server
+
+Proyek ini menggunakan standardisasi package manager `uv`:
 
 ```bash
+# Sinkronisasi dependensi dan jalankan server
 uv run main.py
 ```
 
-Perintah di atas akan secara otomatis memvalidasi environment (memastikan `uv.lock` sinkron), membuat `.venv`, dan menyalakan server uvicorn pada `http://0.0.0.0:8000`.
+Server HTTP SSE FastMCP akan aktif pada `http://0.0.0.0:8000`.
 
-## Integrasi dengan LLM Client (Contoh: Claude Desktop)
+Untuk menjalankan pengujian otomatis:
+```bash
+# Menjalankan unit & integration tests
+uv run pytest -v
 
-Untuk menyambungkan server ini ke aplikasi yang mendukung Model Context Protocol (seperti Claude Desktop), tambahkan konfigurasi berikut pada file pengaturan klien (contohnya `claude_desktop_config.json`):
+# Pengecekan linter & format kode
+uv run ruff check .
+uv run ruff format --check .
+```
 
-**Via UV Stdio (Disarankan untuk environment lokal yang aman):**
+---
+
+## 🤖 Integrasi dengan AI Client (Claude Desktop / Cursor)
+
+Tambahkan konfigurasi berikut pada file pengaturan MCP klien Anda (misalnya `claude_desktop_config.json`):
+
 ```json
 {
   "mcpServers": {
@@ -51,26 +81,35 @@ Untuk menyambungkan server ini ke aplikasi yang mendukung Model Context Protocol
       "command": "uv",
       "args": [
         "run",
-        "c:/path/to/your/project/smart-hydroponic-mcp/main.py"
+        "c:/path/to/smart-hydroponic-mcp/main.py"
       ],
       "env": {
-        "HYDROPONIC_DB_USER": "your_db_user",
-        "HYDROPONIC_DB_PASSWORD": "your_db_password",
-        "HYDROPONIC_DB_NAME": "your_db_name",
         "HYDROPONIC_DB_HOST": "127.0.0.1",
-        "HYDROPONIC_DB_PORT": "5432"
+        "HYDROPONIC_DB_PORT": "5432",
+        "HYDROPONIC_DB_USER": "admin_iot_db",
+        "HYDROPONIC_DB_PASSWORD": "your_password",
+        "HYDROPONIC_DB_NAME": "iot_hydroponik"
       }
     }
   }
 }
 ```
 
-*Catatan: Pastikan Anda menyesuaikan path dan kredensial dengan environment mesin Anda.*
+---
 
-## Fitur (MCP Tools)
+## 🐳 Docker Deployment
 
-- `list_database_tables()`: Menampilkan semua tabel yang ada dalam skema database.
-- `describe_database_table(table_name)`: Mendeskripsikan tipe data dan struktur dari sebuah tabel.
-- `read_hydroponic_table(limit)`: Membaca baris-baris data hidroponik terbaru (bisa diatur batas limitnya).
-- `get_latest_sensor_data()`: Mengambil 1 entri sensor paling terakhir secara spesifik (cocok untuk dashboard real-time).
-- `get_sensor_data_summary(num_buckets, bucket_width)`: Agregasi time-series cerdas. LLM dapat menanyakan "Bagaimana rata-rata pH 7 hari terakhir?", dan tool ini akan memanfaatkan fitur `time_bucket` dari TimescaleDB untuk langsung memberikan jawabannya secara efisien.
+Server ini dapat dijalankan dalam kontainer Docker:
+
+```bash
+# Build Docker image secara lokal
+docker build -t smart-hydroponic-mcp:latest .
+
+# Menjalankan kontainer dengan file environment
+docker run -d --name smart-hydroponic-mcp -p 8000:8000 --env-file .env smart-hydroponic-mcp:latest
+```
+
+Atau menggunakan Docker Compose:
+```bash
+docker compose up -d
+```
