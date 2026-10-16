@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
@@ -44,7 +45,20 @@ mcp = FastMCP(
     name="Hydroponic MCP",
     stateless_http=True,
     json_response=True,
-    transport_security={"allowed_hosts": ["*"]},
+    sse_path="/smart-hydroponic-mcp/sse",
+    message_path="/smart-hydroponic-mcp/messages/",
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=[
+        "aiot.fik.upnvj.ac.id",
+        "aiot.fik.upnvj.ac.id:443",
+        "aiot.fik.upnvj.ac.id:80",
+        "localhost",
+        "localhost:8001",
+        '127.0.0.1',
+        "127.0.0.1:8001",
+        ]
+    ),
 )
 
 app = mcp.sse_app()
