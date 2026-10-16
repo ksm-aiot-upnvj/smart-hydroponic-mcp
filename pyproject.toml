@@ -29,6 +29,10 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 
+[tool.uv]
+# Keep dependency resolution consistent across local and CI environments.
+exclude-newer = "7 days"
+
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
 commit_parser = "conventional"
