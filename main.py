@@ -50,14 +50,14 @@ mcp = FastMCP(
     transport_security=TransportSecuritySettings(
         enable_dns_rebinding_protection=True,
         allowed_hosts=[
-        "aiot.fik.upnvj.ac.id",
-        "aiot.fik.upnvj.ac.id:443",
-        "aiot.fik.upnvj.ac.id:80",
-        "localhost",
-        "localhost:8001",
-        '127.0.0.1',
-        "127.0.0.1:8001",
-        ]
+            "aiot.fik.upnvj.ac.id",
+            "aiot.fik.upnvj.ac.id:443",
+            "aiot.fik.upnvj.ac.id:80",
+            "localhost",
+            "localhost:8001",
+            "127.0.0.1",
+            "127.0.0.1:8001",
+        ],
     ),
 )
 
